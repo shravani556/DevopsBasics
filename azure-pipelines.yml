@@ -4,10 +4,14 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/java
 
 trigger:
-- master
+  branches:
+    include:
+      - main  # Specify the branch you're working on
 
 pool:
   name: Default
+  demands:
+    - agent.name -equals techzoos
 
 steps:
 - task: Maven@3
