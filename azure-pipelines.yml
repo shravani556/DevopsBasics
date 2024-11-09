@@ -7,22 +7,33 @@ pool:
   name: Default
   demands:
     - agent.name -equals techzoos
-    - maven
 
 steps:
+# Install Java
 - task: JavaToolInstaller@0
   inputs:
-    versionSpec: '11'  # Installs Java 11
+    versionSpec: '11'
     jdkArchitectureOption: 'x64'
-    jdkSourceOption: 'AzureStorage'  # You can also use 'LocalDirectory' if you have a local JDK
+    jdkSourceOption: 'AzureStorage'
 
+# Use Maven for build
 - task: Maven@3
   inputs:
     mavenPomFile: 'pom.xml'
     mavenOptions: '-Xmx3072m'
-    javaHomeOption: 'Path'  # Use the installed Java path
+    javaHomeOption: 'Path'
     jdkVersionOption: '1.11'
     jdkArchitectureOption: 'x64'
     publishJUnitResults: true
     testResultsFiles: '**/surefire-reports/TEST-*.xml'
     goals: 'package'
+
+# Azure Deployment Task with the missing file
+- task: AzureResourceManagerTemplateDeployment@3
+  inputs:
+    azureSubscription: 'your-azure-subscription'
+    action: 'Create Or Update Resource Group'
+    resourceGroupName: 'your-resource-group'
+    templateLocation: 'Linked artifact'
+    templateFile: '$(System.DefaultWorkingDirectory)/templates/azuredeploy.json'
+    parametersFile: '$(System.DefaultWorkingDirectory)/templates/azuredeploy.parameters.json'
