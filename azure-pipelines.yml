@@ -8,8 +8,6 @@ trigger:
 
 pool:
   name: Default
-  demands:
-    - agent.name -equals techzoos
 
 steps:
 - task: Maven@3
